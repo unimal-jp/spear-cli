@@ -106,13 +106,26 @@ async function bundle(): Promise<boolean> {
   const componentsList = [] as Component[]
   for (const component of state.componentsList) {
     const parsedNode = await parseElements(state, component.node.childNodes as Element[], state.jsGenerator, settings) as Element[]
-    componentsList.push({
-      "fname": component.fname,
-      "rawData": parsedNode[0].outerHTML,
-      "tagName": component.tagName,
-      "node": parsedNode[0],
-      "props": {}
-    })
+
+    if (parsedNode[0]) {
+      componentsList.push({
+        "fname": component.fname,
+        "rawData": parsedNode[0].outerHTML,
+        "tagName": component.tagName,
+        "node": parsedNode[0],
+        "props": {}
+      })
+    } else {
+      const fakeNode = parse(`<div>a component ${component.fname} is empty.</div>`) as Element
+
+      componentsList.push({
+        "fname": component.fname,
+        "rawData": fakeNode.outerHTML,
+        "tagName": component.tagName,
+        "node": fakeNode,
+        "props": {}
+      })
+    }
   }
   state.componentsList = componentsList
 
